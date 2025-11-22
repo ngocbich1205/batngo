@@ -1,108 +1,212 @@
-// ✨ Hiệu ứng chữ rơi kiểu ma trận
-const canvas = document.getElementById('matrix');
-const ctx = canvas.getContext('2d');
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
+// -----------------------------
+// Helpers & resize handling
+// -----------------------------
+function fitCanvasToWindow(canvas) {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', () => {
+  fitCanvasToWindow(document.getElementById('matrix'));
+  fitCanvasToWindow(document.getElementById('titleCanvas'));
+  // redraw target text if needed (we recompute on start)
+});
 
-const letters = "HAPPY BIRTHDAY ".split("");
+// -----------------------------
+// Background Matrix effect
+// -----------------------------
+const matrixCanvas = document.getElementById('matrix');
+const mctx = matrixCanvas.getContext('2d');
+fitCanvasToWindow(matrixCanvas);
+
+const chars = "HAPPYBIRTHDAY".split("");
 const fontSize = 16;
-const columns = canvas.width / fontSize;
-const drops = Array.from({ length: columns }).fill(1);
+let cols = Math.floor(matrixCanvas.width / fontSize);
+let drops = Array.from({ length: cols }).fill(1);
+
+function resetMatrix() {
+  cols = Math.floor(matrixCanvas.width / fontSize);
+  drops = Array.from({ length: cols }).fill(1);
+}
 
 function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#ff80b5";
-  ctx.font = fontSize + "px Poppins";
+  mctx.fillStyle = "rgba(0,0,0,0.06)";
+  mctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  mctx.fillStyle = "#ff80c8";
+  mctx.font = `${fontSize}px monospace`;
 
-  drops.forEach((y, i) => {
-    const text = letters[Math.floor(Math.random() * letters.length)];
-    ctx.fillText(text, i * fontSize, y * fontSize);
-    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    mctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
     drops[i]++;
-  });
+  }
 }
-setInterval(drawMatrix, 50);
+setInterval(drawMatrix, 45);
+window.addEventListener('resize', resetMatrix);
 
-// 🌸 Hiệu ứng gõ chữ
+// -----------------------------
+// Play background music (user gesture fallback)
+// -----------------------------
+const bgm = document.getElementById('bgm');
+function tryPlayMusic() {
+  const p = bgm.play();
+  if (p !== undefined) {
+    p.catch(() => {
+      // blocked — play on first user click
+      const onClickPlay = () => {
+        bgm.play();
+        window.removeEventListener('click', onClickPlay);
+      };
+      window.addEventListener('click', onClickPlay, { once: true });
+    });
+  }
+}
+tryPlayMusic();
+
+// -----------------------------
+// Intro typing (Typed.js must be loaded via CDN in index.html)
+// -----------------------------
+const introEl = document.getElementById('intro');
+const countdownEl = document.getElementById('countdown');
+
 new Typed("#intro-text", {
   strings: [
-    "Hôm nay là một ngày thật đặc biệt...",
-    "Có ai đó đang lớn thêm một tuổi rồi đấy 🎉"
+    "Hôm nay là một ngày thật đặc biệt…",
+    "Ai đó vừa lớn thêm một tuổi rồi 🎉💗"
   ],
-  typeSpeed: 50,
+  typeSpeed: 45,
   backSpeed: 25,
+  backDelay: 900,
   showCursor: false,
   onComplete: () => {
+    // fade intro then start countdown
     setTimeout(() => {
-      document.getElementById("intro").classList.add("hidden");
-      document.getElementById("main").classList.remove("hidden");
-    }, 1500);
+      introEl.classList.add('hidden');
+      // wait a touch for fade
+      setTimeout(() => startCountdown(), 500);
+    }, 900);
   }
 });
 
-// 🎵 Điều khiển nhạc
-// 🎵 Điều khiển nhạc
-const music = document.getElementById("birthday-audio");
-const toggleBtn = document.getElementById("toggleMusic");
-let isPlaying = false;
+// -----------------------------
+// Countdown 3-2-1
+// -----------------------------
+function startCountdown() {
+  countdownEl.classList.remove('hidden');
+  let n = 3;
+  countdownEl.textContent = n;
 
-// Tự động phát nhạc khi mở trang (nếu trình duyệt cho phép)
-window.addEventListener("load", () => {
-  const playPromise = music.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(() => {
-      // Nếu bị chặn, phát nhạc khi người dùng click lần đầu
-      document.addEventListener(
-        "click",
-        () => {
-          music.play();
-          isPlaying = true;
-          toggleBtn.textContent = "🎵";
-        },
-        { once: true }
-      );
-    });
-  } else {
-    isPlaying = true;
+  const t = setInterval(() => {
+    n--;
+    if (n >= 1) {
+      countdownEl.textContent = n;
+    } else {
+      clearInterval(t);
+      countdownEl.classList.add('hidden');
+      // launch the gather animation
+      startGatherAnimation();
+    }
+  }, 1000);
+}
+
+// -----------------------------
+// Particle gather to "HAPPY BIRTHDAY"
+// -----------------------------
+const titleCanvas = document.getElementById('titleCanvas');
+const tctx = titleCanvas.getContext('2d');
+
+function startGatherAnimation() {
+  titleCanvas.classList.remove('hidden');
+  fitCanvasToWindow(titleCanvas);
+
+  const TEXT = "Happy Birthday";   // <-- chữ thường đúng yêu cầu
+  const PARTICLE_SIZE = 2.5;
+  const SAMPLE_GAP = 2;
+
+  const off = document.createElement('canvas');
+  const offCtx = off.getContext('2d');
+  off.width = titleCanvas.width;
+  off.height = titleCanvas.height;
+
+  // Font Dancing Script
+  const fontSize = Math.floor(Math.min(window.innerWidth / 5, 150));
+  offCtx.font = `${fontSize}px "Dancing Script", cursive`;
+  offCtx.textAlign = "center";
+  offCtx.textBaseline = "middle";
+  offCtx.fillStyle = "white";
+
+  const cx = off.width / 2;
+  const cy = off.height / 2;
+  offCtx.fillText(TEXT, cx, cy);
+
+  const imageData = offCtx.getImageData(0, 0, off.width, off.height);
+  const points = [];
+
+  for (let y = 0; y < off.height; y += SAMPLE_GAP) {
+    for (let x = 0; x < off.width; x += SAMPLE_GAP) {
+      const i = (y * off.width + x) * 4;
+      if (imageData.data[i + 3] > 128) points.push({ x, y });
+    }
   }
-});
 
+  shuffleArray(points);
 
+  const particles = points.map(pt => ({
+    x: Math.random() * titleCanvas.width,
+    y: Math.random() * titleCanvas.height,
+    tx: pt.x,
+    ty: pt.y,
+    vx: 0,
+    vy: 0,
+    size: PARTICLE_SIZE + Math.random() * 1.2,
+    speedFactor: 0.025 + Math.random() * 0.03
+  }));
 
+  function animate() {
+    tctx.clearRect(0, 0, titleCanvas.width, titleCanvas.height);
 
-// 🎁 Hộp quà mở ra
-const giftBox = document.getElementById("gift-box");
-const message = document.getElementById("message");
-const envelope = document.getElementById("envelope");
-const hintText = document.getElementById("hint-text"); // 👉 Thêm dòng này
+    // Glow nền cho chữ
+    tctx.save();
+    tctx.font = `${fontSize}px "Dancing Script", cursive`;
+    tctx.fillStyle = "rgba(255,170,240,0.12)";
+    tctx.textAlign = "center";
+    tctx.textBaseline = "middle";
+    tctx.shadowColor = "rgba(255,150,220,0.45)";
+    tctx.shadowBlur = 25;
+    tctx.fillText(TEXT, cx, cy);
+    tctx.restore();
 
-giftBox.addEventListener("click", () => {
-  // 👉 Khi nhấp hộp quà, ẩn dòng hướng dẫn
-  if (hintText) {
-    hintText.style.display = "none";
+    for (let p of particles) {
+      p.vx += (p.tx - p.x) * p.speedFactor;
+      p.vy += (p.ty - p.y) * p.speedFactor;
+      p.vx *= 0.88;
+      p.vy *= 0.88;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      const d = Math.hypot(p.tx - p.x, p.ty - p.y);
+      const alpha = Math.max(0.3, 1 - d / 100);
+
+      tctx.fillStyle = `rgba(255,90,200,${alpha})`;
+      tctx.fillRect(p.x, p.y, p.size, p.size);
+    }
+
+    requestAnimationFrame(animate);
   }
 
-  // Hiệu ứng xoay và bùm pháo giấy
-  giftBox.querySelector("img").style.transform = "rotateX(90deg)";
-  confetti({
-    particleCount: 250,
-    spread: 120,
-    origin: { y: 0.6 },
-    colors: ['#ff80b5', '#ffe0f0', '#ffffff']
-  });
-
-  // Hiện lời chúc và phong bì sau khi “bùm”
-  setTimeout(() => {
-    message.classList.remove("hidden");
-    envelope.classList.remove("hidden");
-  }, 600);
-});
+  animate();
+}
 
 
-// 💌 Mở thư chúc
-const letter = document.getElementById("letter");
-envelope.addEventListener("click", () => {
-  envelope.style.display = "none";
-  letter.classList.remove("hidden");
-});
+
+// small util: Fisher-Yates shuffle
+function shuffleArray(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}

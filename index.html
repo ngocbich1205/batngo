@@ -1,54 +1,33 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>🎂 Happy Birthday ✨</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>🎂 Happy Birthday</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Typed.js for intro typing -->
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <!-- Hiệu ứng nền chữ rơi -->
+
+  <!-- Audio (sử dụng file bạn upload) -->
+  <audio id="bgm" src="happybirthday.mp3" loop></audio>
+
+  <!-- Matrix background -->
   <canvas id="matrix"></canvas>
 
-  <!-- Intro -->
-  <div id="intro" class="fade-in">
+  <!-- Intro typing -->
+  <div id="intro" class="intro">
     <span id="intro-text"></span>
   </div>
 
-  <!-- Main Scene -->
-   <audio id="birthday-audio" src="happybirthday.mp3" loop></audio>
+  <!-- Countdown -->
+  <div id="countdown" class="hidden">3</div>
 
-  <div id="main" class="hidden">
-  
-    
-
-   
-
-    <!-- Hộp quà -->
-    <div id="gift-box">
-      <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="Gift Box">
-      <p id="hint-text">🎁 Nhấp vào hộp quà để mở điều bất ngờ 💖</p>
-    </div>
-
-    <!-- Lời chúc -->
-    <div id="message" class="hidden">
-      <h1>🎉 Happy Birthday <span id="name">Người đẹp</span> 💖</h1>
-      <p>Chúc bạn một ngày thật ngọt ngào,<br>
-      tràn đầy yêu thương và hạnh phúc ✨</p>
-    </div>
-
-
-    <!-- Thư -->
-    <div id="letter" class="hidden">
-      <img src="https://cdn-icons-png.flaticon.com/512/3472/3472620.png" alt="Letter">
-      <p>
-        🌸 Tuổi mới rạng rỡ như ánh nắng,<br>
-        ngọt ngào như bánh kem,<br>
-        và tươi tắn như đóa hoa mai 💐
-      </p>
-    </div>
-  </div>
+  <!-- Title particles canvas -->
+  <canvas id="titleCanvas" class="hidden"></canvas>
 
   <script src="script.js"></script>
 </body>

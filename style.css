@@ -1,168 +1,70 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Great+Vibes&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap');
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  margin: 0;
+html, body {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: radial-gradient(circle at bottom, #1a1a2e, #0f0f1a);
+  background: radial-gradient(circle at top left, #14121a 0%, #080608 100%);
   color: #fff;
-  text-align: center;
-  font-family: 'Great Vibes', cursive;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* 🩷 Căn giữa nội dung chúc mừng 
-#birthday-message {
-  position: absolute;
+/* Matrix canvas */
+#matrix {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Intro overlay */
+.intro {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,8,12,0.84);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.6rem;
+  color: #ffcfe6;
+  text-shadow: 0 0 18px #ff9acb;
+  z-index: 6;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.intro.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+/* Countdown */
+#countdown {
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  text-align: center;
-  color: #ffe6f2;
-  text-shadow: 0 0 15px #ffb6c1, 0 0 25px #ff80ab;
-  font-size: 2.5em;
-  animation: glow 2s ease-in-out infinite alternate;
+  font-size: 8rem;
+  font-weight: 600;
+  color: #ff80c8;
+  text-shadow: 0 0 40px rgba(255,100,170,0.9);
+  z-index: 8;
+  pointer-events: none;
 }
 
-@keyframes glow {
-  from { text-shadow: 0 0 15px #ffb6c1, 0 0 25px #ff80ab; }
-  to { text-shadow: 0 0 25px #ff99cc, 0 0 40px #ffb6c1; }
-}
+.hidden { display: none; }
 
-/* Dòng chúc nhỏ phía dưới */
-#sub-message {
-  margin-top: 20px;
-  font-size: 1.2em;
-  color: #ffd6e0;
-  text-shadow: 0 0 10px #ff80ab;
-}
-
-/* Hiệu ứng fade in intro */
-.fade-in {
+/* Title canvas (particles) */
+#titleCanvas {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(10, 10, 15, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Great Vibes', cursive;
-  font-size: 2.5rem;
-  color: #ffb6c1;
-  text-shadow: 0 0 15px #ffb6c1;
-  z-index: 2;
-}
-.hidden {
-  display: none;
+  inset: 0;
+  z-index: 5;
 }
 
-
-#toggleMusic {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  font-size: 22px;
-  padding: 10px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
-  transition: 0.3s;
-}
-#toggleMusic:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Hộp quà */
-#gift-box {
-  margin-top: 150px;
-  animation: float 3s ease-in-out infinite;
-}
-#gift-box img {
-  width: 160px;
-  cursor: pointer;
-  transition: transform 0.8s;
-}
-#hint-text {
-  font-family: 'Great Vibes', cursive;
-  color: #ffc8dd;
-  font-size: 1.3em;
-  text-shadow: 0 0 8px #ffb6c1;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* Lời chúc */
-#message {
-  margin-top: 40px;
-  font-family: 'Great Vibes', cursive;
-  color: #ffe3ec;
-  text-shadow: 0 0 10px #ff9ac4;
-  animation: fadeUp 1.2s ease forwards;
-}
-#message h1 {
-  font-size: 3rem;
-  margin: 10px 0;
-}
-#message p {
-  font-size: 1.5rem;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Phong bì + thư */
-#envelope img {
-  width: 120px;
-  margin-top: 50px;
-  cursor: pointer;
-  transition: transform 0.5s;
-}
-#envelope img:hover {
-  transform: scale(1.1);
-}
-#letter {
-  position: relative;
-  display: inline-block;
-  margin-top: 20px;
-}
-#letter img {
-  width: 220px;
-}
-#letter p {
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  color: #333;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  line-height: 1.4em;
-}
-
-/* Canvas hiệu ứng rơi */
-canvas#matrix {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
+/* small screens scaling */
+@media (max-width: 600px) {
+  .intro { font-size: 1.8rem; }
+  #countdown { font-size: 5rem; }
 }
