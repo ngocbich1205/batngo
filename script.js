@@ -132,7 +132,7 @@ function startGatherAnimation() {
   off.height = titleCanvas.height;
 
   // Font Dancing Script
-  const fontSize = Math.floor(Math.min(window.innerWidth / 5, 100));
+  const fontSize = Math.floor(Math.min(window.innerWidth / 3, 90));
   offCtx.font = `${fontSize}px "Dancing Script", cursive`;
   offCtx.textAlign = "center";
   offCtx.textBaseline = "middle";
